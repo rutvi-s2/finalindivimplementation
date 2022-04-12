@@ -81,13 +81,15 @@
         if (typeof {{all_coords}} !== 'undefined') {
           for (var i = 0; i < {{all_coords}}.length; i++){
             var xy = ({{all_coords}})[i];
-            var xy_point = new paper.Point(xy[0], xy[1]);
+            var xy_point = new paper.Point(xy);
             path.add(xy_point);
             points.push(xy);
           }
         }
         
     		tool.onMouseDown = function(event) {
+          path = new paper.Path();
+          path.strokeColor = 'black';
     			path.add(event.point);
           points.push([event.point.x, event.point.y]); 
     		}
@@ -105,6 +107,7 @@
       }
 
       init();
+      db.connections.close_all()
   }
 </script>
 </body>
