@@ -33,17 +33,17 @@ def get_drawing_by_author_and_title(author_obj, drawing_title, points):
     drawing = Drawing(title = drawing_title, author=author_obj)
     
     # save the created object
-  drawing.save() 
-  for point in points:
-      coord = Coord(x=point[0], y=point[1])
-      if not (coord in drawing.drawing_points.all()):
-        coord.save()
-        drawing.drawing_points.add(coord)
-        drawing.save    
+    drawing.save() 
+    for point in points:
+        coord = Coord(x=point[0], y=point[1])
+        if not (coord in drawing.drawing_points.all()):
+          coord.save()
+          drawing.drawing_points.add(coord)
+          drawing.save()    
   return drawing
   
 @csrf_exempt
-def index(request, authorname="DefaultAuthor"):
+def index(request, authorname="DefaultAuthor", titlename="DefaultTitle"):
 
   print("The authorname is:", authorname)
   author = get_author_by_name(authorname)
@@ -70,7 +70,18 @@ def index(request, authorname="DefaultAuthor"):
     # if a drawing by the author already exists,
     # send the drawing conent and title with the data below
     all_coords = []
-    if Drawing.objects.filter(author = author).exists():
+    if Drawing.objects.filter(author = author, title=titlename).exists():
+      drawing = Drawing.objects.filter(author = author, title=titlename)
+      coord_set = drawing[len(drawing)-1].drawing_points.all()
+      for coord in coord_set:
+        xy = [coord.x, coord.y]
+        all_coords.append(xy)
+      data = {
+        "author": author,
+        "drawing": drawing[len(drawing)-1],
+        "all_coords": all_coords
+      }
+    elif Drawing.objects.filter(author = author).exists():
       drawing = Drawing.objects.filter(author = author)
       coord_set = drawing[len(drawing)-1].drawing_points.all()
       for coord in coord_set:
