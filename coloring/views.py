@@ -55,7 +55,6 @@ def index(request, authorname="DefaultAuthor"):
     # demonstrating printing out the POST request & data
     print("Received POST request with data:")
     data = json.loads(request.body.decode('UTF-8'))
-    print(data.get("points"))
     drawing = get_drawing_by_author_and_title(author, data.get("title"), data.get("points"))
     # find out if a Drawing with the Author and Title already exists?
     # if it doesn't exist, you may create a new Drawing object
@@ -71,15 +70,22 @@ def index(request, authorname="DefaultAuthor"):
 
     # if a drawing by the author already exists,
     # send the drawing conent and title with the data below
+    all_coords = []
     if Drawing.objects.filter(author = author).exists():
       drawing = Drawing.objects.filter(author = author)
+      coord_set = drawing[len(drawing)-1].drawing_points.all()
+      for coord in coord_set:
+        xy = [coord.x, coord.y]
+        all_coords.append(xy)
       data = {
         "author": author,
-        "drawing": drawing[len(drawing)-1]
+        "drawing": drawing[len(drawing)-1],
+        "all_coords": all_coords
       }
     else:
       data = {
-        "author": author
+        "author": author,
+        "all_coords": all_coords
       }
     
     return render(request, 'coloring/index.html', data)

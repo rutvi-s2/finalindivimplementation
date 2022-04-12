@@ -29,7 +29,7 @@
         
         <br></br>
         
-        <h4><label for="myTitle">Drawing Title: {{ drawing.title}}</label></h4>
+        <h4><label for="myTitle">Drawing Title: {{ drawing.title }}</label></h4>
         <textarea id="myTitle"></textarea>
 
         <br></br>
@@ -41,10 +41,9 @@
   </div>
   <script>
     
-    window.onload = function() {
-
+    window.onload = function() {  
       var points = []; 
-
+    
       $('#save').on("click", function(){
 
         // send title, points, and author name to the server
@@ -66,23 +65,29 @@
         });
         
       });
-
       $("#reset").on("click", function(){
         paper.project.activeLayer.removeChildren();
         paper.view.draw();
         points = []; 
       });
       
-      // click and drag to draw
       function basicDrawingTool(){
         
     		var tool = new paper.Tool();
     		var path;
-    
-    		// Define a mousedown and mousedrag handler
+        path = new paper.Path();
+        path.strokeColor = 'black';
+
+        if (typeof {{all_coords}} !== 'undefined') {
+          for (var i = 0; i < {{all_coords}}.length; i++){
+            var xy = ({{all_coords}})[i];
+            var xy_point = new paper.Point(xy[0], xy[1]);
+            path.add(xy_point);
+            points.push(xy);
+          }
+        }
+        
     		tool.onMouseDown = function(event) {
-    			path = new paper.Path();
-    			path.strokeColor = 'black';
     			path.add(event.point);
           points.push([event.point.x, event.point.y]); 
     		}
@@ -90,7 +95,7 @@
     		tool.onMouseDrag = function(event) {
     			path.add(event.point);
           points.push([event.point.x, event.point.y]); 
-    		}      
+    		} 
       }
 
       function init(){
@@ -101,7 +106,6 @@
 
       init();
   }
-
 </script>
 </body>
 </html>
