@@ -31,16 +31,15 @@ def get_drawing_by_author_and_title(author_obj, drawing_title, points):
   else: 
     # otherwise, create a new Drawing with the name authorname
     drawing = Drawing(title = drawing_title, author=author_obj)
-
     
     # save the created object
   drawing.save() 
   for point in points:
       coord = Coord(x=point[0], y=point[1])
-      coord.save()
-      drawing.drawing_points.add(coord)
-      drawing.save
-      
+      if not (coord in drawing.drawing_points.all()):
+        coord.save()
+        drawing.drawing_points.add(coord)
+        drawing.save    
   return drawing
   
 @csrf_exempt
